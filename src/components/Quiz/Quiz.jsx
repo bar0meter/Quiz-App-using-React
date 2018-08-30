@@ -1,16 +1,27 @@
 import React, { Component } from "react";
+import Question from "./Question";
 
 class Quiz extends Component {
-  state = {
-    quiz: []
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      index: 0,
+      quiz: [],
+      currentQues: {
+        question: "",
+        options: []
+      },
+      submittedAns: []
+    };
+  }
 
   componentWillMount() {
-    fetch("https://opentdb.com/api.php?amount=10&category=31")
+    fetch("https://opentdb.com/api.php?amount=2&category=31")
       .then(res => res.json())
       .then(data => {
         let quiz = this.formatQuiz(data["results"]);
         this.setState({ quiz: quiz });
+        this.setState({ currentQues: quiz[this.state.index] });
         return;
       });
   }
@@ -60,11 +71,37 @@ class Quiz extends Component {
     }
   }
 
+  handleAnsSubmit = answer => {
+    let index = this.state.index;
+    let submittedAns = [...this.state.submittedAns];
+    submittedAns.push({
+      index: index,
+      answer: answer,
+      correctAns: this.state.quiz[index].correctAns
+    });
+    this.setState(
+      {
+        submittedAns: submittedAns
+      },
+      () => {
+        index++;
+        if (index === this.state.quiz.length) {
+          alert("Quiz Ended,);
+          console.log(this.state.submittedAns);
+          return;
+        }
+        this.setState({ index: index, currentQues: this.state.quiz[index] });
+      }
+    );
+  };
+
   render() {
+    if (this.state.index === this.state.quiz.length) return null;
+    const question = this.state.currentQues;
     return (
       <div>
-        <p>Quiz</p>
-        {console.log(this.state.quiz)}
+        <h2>Quiz</h2>
+        <Question question={question} onAnsSubmit={this.handleAnsSubmit} />
       </div>
     );
   }
