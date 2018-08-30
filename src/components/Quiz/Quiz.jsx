@@ -86,7 +86,7 @@ class Quiz extends Component {
       () => {
         index++;
         if (index === this.state.quiz.length) {
-          alert("Quiz Ended,);
+          alert("Quiz Ended");
           console.log(this.state.submittedAns);
           return;
         }
